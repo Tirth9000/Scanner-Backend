@@ -1,3 +1,4 @@
+from datetime import datetime
 from fastapi import APIRouter, Depends,HTTPException
 from database.database import (
     get_questions_collection,
@@ -15,14 +16,18 @@ async def assess(
     payload: dict,
     user=Depends(get_current_user),
     questions=Depends(get_questions_collection),
-    results=Depends(get_assessment_results_collection)
+    results=Depends(get_assessment_results_collection),
 ):
-    answers = payload.get("answers")
-    if not answers or len(answers) == 0:
-        raise HTTPException(
-            status_code=400,
-            detail="Assessment answers cannot be empty"
-        )
+    answers = payload.get("answers", [])
+
+    if not answers:
+        return {
+            "message": "No answers submitted",
+            "score": 0,
+            "percentage": 0,
+            "risk_level": "Critical",
+            "answers": []
+        }
 
     user_id = str(user["_id"])
     score = 0
@@ -31,21 +36,14 @@ async def assess(
     for ans in answers:
         q = await questions.find_one({"id": ans["questionId"]})
         if not q:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Invalid questionId: {ans['questionId']}"
-            )
+            continue
 
         opt = next(
             (o for o in q["options"] if o["option_key"] == ans["selectedOption"]),
             None
         )
-
         if not opt:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Invalid option for questionId {ans['questionId']}"
-            )
+            continue
 
         score += opt["score"]
 
@@ -63,25 +61,17 @@ async def assess(
         else "Moderate" if percentage < 70
         else "Secure"
     )
-
-    result = AssessmentResult(
-        user=user_id,
-        score=score,
-        total_questions=len(answers),
-        max_possible_score=max_score,
-        percentage=percentage,
-        risk_level=risk_level,
-        answers=answer_docs
-    )
-
-    await results.insert_one(result.to_dict())
-    saved={
-        "user": user_id,
-        "score": score,
-        "total_questions": len(answers),
-        "max_possible_score": max_score,
-        "percentage": percentage,
-        "risk_level": risk_level,
-        "answers": answer_docs
+    result = {
+    "user": user_id,
+    "score": score,
+    "total_questions": len(answers),
+    "max_possible_score": max_score,
+    "percentage": percentage,
+    "risk_level": risk_level,
+    "answers": answer_docs,
+    "createdAt": datetime.utcnow(),
+    "updatedAt": datetime.utcnow(),
     }
-    return saved
+    await results.insert_one(result)
+    result["_id"] = str(result["_id"])
+    return result

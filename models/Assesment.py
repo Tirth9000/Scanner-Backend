@@ -1,42 +1,48 @@
 from datetime import datetime
-from typing import List
+from typing import List, Optional, Any
+from pydantic import BaseModel, Field
 from bson import ObjectId
 
-class Question:
-    def __init__(self, id, category_id, category_name, question_text, options):
-        self.id = id
-        self.category_id = category_id
-        self.category_name = category_name
-        self.question_text = question_text
-        self.options = options
+class PyObjectId(ObjectId):
+    @classmethod
+    def __get_validators__(cls):
+        yield cls.validate
 
-    def to_dict(self):
-        return self.__dict__
+    @classmethod
+    def validate(cls, v):
+        if isinstance(v, ObjectId):
+            return v
+        if not ObjectId.is_valid(v):
+            raise ValueError("Invalid ObjectId")
+        return ObjectId(v)
+    
+class Question(BaseModel):
+    id: int
+    category_id: int
+    category_name: str
+    question_text: str
+    options: List[dict]
 
-class AssessmentResult:
-    def __init__(
-        self,
-        user,
-        score,
-        total_questions,
-        max_possible_score,
-        percentage,
-        risk_level,
-        answers,
-        _id=None,
-        createdAt=None,
-        updatedAt=None,
-    ):
-        self._id = _id or ObjectId()
-        self.user = user
-        self.score = score
-        self.total_questions = total_questions
-        self.max_possible_score = max_possible_score
-        self.percentage = percentage
-        self.risk_level = risk_level
-        self.answers = answers
-        self.createdAt = createdAt or datetime.utcnow()
-        self.updatedAt = updatedAt or datetime.utcnow()
+    class Config:
+        json_encoders = {ObjectId: str}
 
-    def to_dict(self):
-        return self.__dict__
+class AssessmentResult(BaseModel):
+    id: Optional[PyObjectId] = Field(default_factory=PyObjectId, alias="_id")
+    user: str  
+    score: int
+    total_questions: int
+    max_possible_score: int
+    percentage: float
+    risk_level: str
+    answers: List[dict]
+
+    createdAt: datetime = Field(default_factory=datetime.utcnow)
+    updatedAt: datetime = Field(default_factory=datetime.utcnow)
+
+    class Config:
+        populate_by_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {
+            ObjectId: str,
+            datetime: lambda v: v.isoformat()
+        }

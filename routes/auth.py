@@ -11,11 +11,20 @@ router = APIRouter(
 
 @router.post("/signup")
 async def signup(payload: SignupRequest, users=Depends(get_user_collection)):
-    data = payload.dict()
-    data["password"] = hash_password(payload.password)
-    user = User(**data)
-    await users.insert_one(user.to_dict())
-    return {"message": "Registration completed successfully"}
+    existing_user = await users.find_one({"email": payload.email})
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Email already registered"
+        )
+    hashed_password = hash_password(payload.password)
+    user = User(
+        username=payload.username,
+        email=payload.email,
+        password=hashed_password
+    )
+    await users.insert_one(user.model_dump(by_alias=True))
+    return {"message": "User registered successfully"}
 
 @router.post("/authorize")
 async def signin(

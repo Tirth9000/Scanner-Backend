@@ -2,8 +2,8 @@ from fastapi import APIRouter, HTTPException, status
 import uuid, redis, json
 
 router = APIRouter(
-    prefix="/auth",
-    tags=["Auth"]
+    prefix="/api/scanner",
+    tags=["Scanner"]
 )
 
 

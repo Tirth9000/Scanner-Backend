@@ -4,6 +4,7 @@ from api.scanner.schemas import RequestScanTask
 from core.redis_queue import RedisClient
 import json
 
+
 router = APIRouter()
 
 @router.post("/scanner/register-scan-task")

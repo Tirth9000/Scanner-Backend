@@ -1,14 +1,38 @@
+from dotenv import load_dotenv
+load_dotenv()  # Load env vars FIRST before other imports
+
 from fastapi import FastAPI
-# from api.auth.routes import router as auth_router
+from fastapi.middleware.cors import CORSMiddleware
+from app.api.auth.routes import router as auth_router
+from app.api.scanner.routes import router as scanner_router
+from app.db.sessions import init_db, init_tables
 from api.scanner.routes import router as scanner_router
 from api.webhooks.scanner import router as webhook_scanner_router
 
 app = FastAPI()
 
-# Include routers
-# app.include_router(auth_router)
+# Initialize database on startup
+init_db()
+init_tables()
+
+# CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# routes
+app.include_router(auth_router)
 app.include_router(scanner_router)
 app.include_router(webhook_scanner_router)
+
+
+@app.get('/')
+def root():
+    return "ShieldStat backend is running"
 
 if __name__ == "__main__":
     import uvicorn

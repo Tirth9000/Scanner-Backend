@@ -51,6 +51,7 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+.cursor
 
 # ===============================
 # Testing / Coverage

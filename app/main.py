@@ -6,6 +6,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.auth.routes import router as auth_router
 from app.api.scanner.routes import router as scanner_router
 from app.db.sessions import init_db, init_tables
+from api.scanner.routes import router as scanner_router
+from api.webhooks.scanner import router as webhook_scanner_router
 
 app = FastAPI()
 
@@ -25,8 +27,13 @@ app.add_middleware(
 # routes
 app.include_router(auth_router)
 app.include_router(scanner_router)
+app.include_router(webhook_scanner_router)
 
 
 @app.get('/')
 def root():
     return "ShieldStat backend is running"
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

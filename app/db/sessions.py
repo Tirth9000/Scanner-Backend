@@ -35,11 +35,11 @@ def init_db():
 
 # create tables if it doesnt exists
 def init_tables():
-    from app.db.base import getCursor
+    from db.base import getCursor
     cursor = getCursor()
 
     # create table if if doesnt exist
-    # Create users table
+    
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id VARCHAR(36) PRIMARY KEY,
@@ -48,6 +48,36 @@ def init_tables():
             password VARCHAR(255) NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS questions (
+            _id INT PRIMARY KEY,
+            category_id INT NOT NULL,
+            category_name TEXT NOT NULL,
+            question_text TEXT NOT NULL,
+            options JSONB NOT NULL,
+            created_at TIMESTAMP DEFAULT now(),
+            updated_at TIMESTAMP DEFAULT now()
+        );
+
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS assessment_results (
+            _id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            user_id VARCHAR(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            summary JSONB NOT NULL,
+            category_scores JSONB NOT NULL,
+            answers JSONB NOT NULL,
+            created_at TIMESTAMP DEFAULT now(),
+            updated_at TIMESTAMP DEFAULT now()
+        );
+    """)
+
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS idx_assessment_results_user_id
+        ON assessment_results(user_id);
     """)
     
     

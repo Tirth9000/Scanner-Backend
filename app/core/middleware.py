@@ -2,7 +2,7 @@ from fastapi import HTTPException, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt, JWTError
 import os
-from app.db.base import getCursor
+from db.base import getCursor
 
 JWT_SECRET = os.getenv('JWT_SECRET')
 security = HTTPBearer()

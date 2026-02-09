@@ -1,10 +1,10 @@
 from fastapi import APIRouter, HTTPException, Depends
 from fastapi.responses import JSONResponse
 import uuid
-from app.api.auth.scheams import RegisterRequest, LoginRequest
-from app.db.base import getCursor
-from app.api.auth.helper_functions import hashPassword, verifyPassword, generateToken
-from app.core.middleware import protect
+from api.auth.scheams import RegisterRequest, LoginRequest
+from db.base import getCursor
+from api.auth.helper_functions import hashPassword, verifyPassword, generateToken
+from core.middleware import protect
 
 router = APIRouter(prefix='/api/auth', tags=['auth'])
 

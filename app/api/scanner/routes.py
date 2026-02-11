@@ -5,21 +5,21 @@ from core.redis_queue import RedisClient
 import json
 
 
-router = APIRouter()
+router = APIRouter(prefix='/api/scanner')
 
-@router.post("/scanner/register-scan-task")
+@router.post("/register-scan-task")
 async def register_scan_task(request: RequestScanTask):
     return await create_scan_task_to_queue(request)
 
 
-@router.get("/scanner/scanlist")
+@router.get("/scanlist")
 def get_scan_list():
     redis_client = RedisClient() 
     data = redis_client.redis.lrange("scan_queue", 0, -1)
     return  [json.loads(item) for item in data]
     # return [item for item in data]
 
-@router.get("/scanner/clear")
+@router.get("/clear")
 def clear_scan_queue():
     redis_client = RedisClient() 
     redis_client.redis.delete("scan_queue")

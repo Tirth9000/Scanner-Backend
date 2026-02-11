@@ -3,17 +3,27 @@ load_dotenv()  # Load env vars FIRST before other imports
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.auth.routes import router as auth_router
-from app.api.scanner.routes import router as scanner_router
-from app.db.sessions import init_db, init_tables
+from api.auth.routes import router as auth_router
+from api.scanner.routes import router as scanner_router
+from db.sessions import init_db, init_tables
 from api.scanner.routes import router as scanner_router
 from api.webhooks.scanner import router as webhook_scanner_router
+from api.seed.routes import router as seed_router, seed_questions_data
+from api.assessment.routes import router as assessment_router
+from api.questions.routes import router as questions_router
 
 app = FastAPI()
 
 # Initialize database on startup
 init_db()
 init_tables()
+
+# Seed questions on startup
+try:
+    tup = seed_questions_data()
+    print(tup[1])
+except Exception as e:
+    print(f"Error seeding questions: {e}")
 
 # CORS
 app.add_middleware(
@@ -26,8 +36,11 @@ app.add_middleware(
 
 # routes
 app.include_router(auth_router)
+app.include_router(seed_router)
 app.include_router(scanner_router)
 app.include_router(webhook_scanner_router)
+app.include_router(assessment_router)
+app.include_router(questions_router)
 
 
 @app.get('/')

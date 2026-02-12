@@ -15,24 +15,24 @@ from api.questions.routes import router as questions_router
 app = FastAPI()
 
 # Initialize database on startup
-init_db()
-init_tables()
+# init_db()
+# init_tables()
 
-# Seed questions on startup
-try:
-    tup = seed_questions_data()
-    print(tup[1])
-except Exception as e:
-    print(f"Error seeding questions: {e}")
+# # Seed questions on startup
+# try:
+#     tup = seed_questions_data()
+#     print(tup[1])
+# except Exception as e:
+#     print(f"Error seeding questions: {e}")
 
-# CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# # CORS
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["*"],
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
 
 # routes
 app.include_router(auth_router)
@@ -45,8 +45,8 @@ app.include_router(questions_router)
 
 @app.get('/')
 def root():
-    return "ShieldStat backend is running"
+    return "Scanner Backend is running"
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

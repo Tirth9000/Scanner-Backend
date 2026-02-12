@@ -8,7 +8,7 @@ router = APIRouter()
 def scanner_webhook(request: ScannerWebhookRequest):
     data = request.data
     print(f"Received scanner webhook: {data}")
-
+    return {"status": "ok"}
 
 
 @router.post("/webhooks/scan/result")

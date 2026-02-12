@@ -5,6 +5,7 @@ import time
 
 class ScannerWebhookRequest(BaseModel):
     scan_id: str
+    target: str
     event: str
     data: str
 

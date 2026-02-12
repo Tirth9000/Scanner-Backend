@@ -2,6 +2,7 @@ services:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   backend:
     build: 
       context: .
@@ -40,6 +41,8 @@ networks:
 >>>>>>> 38aa2aa (Implement scanner webhook response and update schemas; configure Docker and docker-compose for backend service)
 =======
 >>>>>>> d8493e6 (dockerfile and docker-compose setup)
+=======
+>>>>>>> 38aa2aa (Implement scanner webhook response and update schemas; configure Docker and docker-compose for backend service)
   postgres:
     image: postgres:16-alpine
     container_name: postgres
@@ -100,8 +103,11 @@ volumes:
   postgres_data:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> d8493e6 (dockerfile and docker-compose setup)
 =======
+=======
+>>>>>>> 38aa2aa (Implement scanner webhook response and update schemas; configure Docker and docker-compose for backend service)
 =======
   backend:
     build: 
@@ -137,6 +143,9 @@ networks:
     external: true
 
 >>>>>>> d9b4b4e (Implement scanner webhook response and update schemas; configure Docker and docker-compose for backend service)
+<<<<<<< HEAD
 >>>>>>> 38aa2aa (Implement scanner webhook response and update schemas; configure Docker and docker-compose for backend service)
 =======
 >>>>>>> d8493e6 (dockerfile and docker-compose setup)
+=======
+>>>>>>> 38aa2aa (Implement scanner webhook response and update schemas; configure Docker and docker-compose for backend service)

@@ -1,5 +1,6 @@
 services:
 <<<<<<< HEAD
+<<<<<<< HEAD
   backend:
     build: 
       context: .
@@ -34,6 +35,8 @@ networks:
     external: true
 
 =======
+=======
+>>>>>>> 38aa2aa (Implement scanner webhook response and update schemas; configure Docker and docker-compose for backend service)
   postgres:
     image: postgres:16-alpine
     container_name: postgres
@@ -92,4 +95,42 @@ networks:
 
 volumes:
   postgres_data:
+<<<<<<< HEAD
 >>>>>>> d8493e6 (dockerfile and docker-compose setup)
+=======
+=======
+  backend:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    command: >
+      sh -c "cd app && 
+              python main.py"
+
+    container_name: "scanner-backend"
+    networks:
+      - scanner-network
+    environment:
+      - REDIS_ADDR=redis:6379
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+
+
+  redis:
+    image: "redis:alpine"
+    container_name: "scanner-redis"
+    networks:
+      - scanner-network
+    ports:
+      - "6379:6379"
+
+networks:
+  scanner-network:
+    external: true
+
+>>>>>>> d9b4b4e (Implement scanner webhook response and update schemas; configure Docker and docker-compose for backend service)
+>>>>>>> 38aa2aa (Implement scanner webhook response and update schemas; configure Docker and docker-compose for backend service)

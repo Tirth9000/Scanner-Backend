@@ -3,13 +3,31 @@ from api.scanner.service import create_scan_task_to_queue
 from api.scanner.schemas import RequestScanTask
 from core.redis_queue import RedisClient
 import json
+from db.base import getCursor
 
 
-router = APIRouter(prefix='/api/scanner')
+router = APIRouter(prefix='/api/scanner', tags=["scanner"])
 
 @router.post("/register-scan-task")
 async def register_scan_task(request: RequestScanTask):
-    return await create_scan_task_to_queue(request)
+    result = await create_scan_task_to_queue(request)
+    scan_id = result["scan_id"]
+
+    cursor = getCursor()
+    cursor.execute(
+        """
+        INSERT INTO scan_results(user_id, scan_id, domain, results)
+        VALUES (%s, %s, %s, %s)
+        """,
+        (
+            request.user_id,
+            scan_id,
+            request.target,
+            json.dumps({'status': 'pending'})
+        ),
+    )
+    cursor.close()
+    return result
 
 
 @router.get("/scanlist")

@@ -56,9 +56,7 @@ def init_tables():
             category_id INT NOT NULL,
             category_name TEXT NOT NULL,
             question_text TEXT NOT NULL,
-            options JSONB NOT NULL,
-            created_at TIMESTAMP DEFAULT now(),
-            updated_at TIMESTAMP DEFAULT now()
+            options JSONB NOT NULL
         );
 
     """)
@@ -70,14 +68,28 @@ def init_tables():
             summary JSONB NOT NULL,
             category_scores JSONB NOT NULL,
             answers JSONB NOT NULL,
-            created_at TIMESTAMP DEFAULT now(),
-            updated_at TIMESTAMP DEFAULT now()
+            created_at TIMESTAMP DEFAULT now()
         );
     """)
 
     cursor.execute("""
         CREATE INDEX IF NOT EXISTS idx_assessment_results_user_id
         ON assessment_results(user_id);
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS scan_results (
+            user_id VARCHAR(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            scan_id VARCHAR(36) NOT NULL,
+            domain TEXT NOT NULL,
+            results JSONB NOT NULL,
+            updated_at TIMESTAMP DEFAULT now()
+        );
+    """)
+
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS idx_scan_results_user_id
+        ON scan_results(user_id);
     """)
     
     

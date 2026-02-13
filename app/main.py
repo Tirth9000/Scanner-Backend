@@ -7,7 +7,7 @@ from api.auth.routes import router as auth_router
 from api.scanner.routes import router as scanner_router
 from db.sessions import init_db, init_tables
 from api.scanner.routes import router as scanner_router
-from api.webhooks.scanner import router as webhook_scanner_router
+from api.webhooks.routes import router as webhook_scanner_router
 from api.seed.routes import router as seed_router, seed_questions_data
 from api.assessment.routes import router as assessment_router
 from api.questions.routes import router as questions_router

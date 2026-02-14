@@ -1,13 +1,17 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import redis, json, os
 =======
 =======
 >>>>>>> 38aa2aa (Implement scanner webhook response and update schemas; configure Docker and docker-compose for backend service)
+=======
+>>>>>>> d8493e6 (dockerfile and docker-compose setup)
 import os
 import redis
 import json
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 >>>>>>> d8493e6 (dockerfile and docker-compose setup)
 =======
@@ -15,6 +19,8 @@ import json
 import redis, json, os
 >>>>>>> d9b4b4e (Implement scanner webhook response and update schemas; configure Docker and docker-compose for backend service)
 >>>>>>> 38aa2aa (Implement scanner webhook response and update schemas; configure Docker and docker-compose for backend service)
+=======
+>>>>>>> d8493e6 (dockerfile and docker-compose setup)
 
 class RedisClient:
     addr = os.getenv("REDIS_ADDR", "redis:6379")
@@ -22,6 +28,7 @@ class RedisClient:
     def __init__(
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         self, 
         host: str = addr.split(":")[0],
         port: int = addr.split(":")[1],
@@ -40,6 +47,11 @@ class RedisClient:
         port: int = addr.split(":")[1],
 >>>>>>> d9b4b4e (Implement scanner webhook response and update schemas; configure Docker and docker-compose for backend service)
 >>>>>>> 38aa2aa (Implement scanner webhook response and update schemas; configure Docker and docker-compose for backend service)
+=======
+        self,
+        host: str | None = None,
+        port: int | None = None,
+>>>>>>> d8493e6 (dockerfile and docker-compose setup)
         db: int = 0,
         decode_responses: bool = True,
     ):

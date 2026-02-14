@@ -13,7 +13,7 @@ async def get_questions():
         cursor = getCursor()
         cursor.execute(
             """
-            SELECT _id, category_id, category_name, question_text, options, created_at, updated_at
+            SELECT _id, category_id, category_name, question_text, options
             FROM questions
             ORDER BY _id ASC
             """
@@ -22,7 +22,7 @@ async def get_questions():
         cursor.close()
 
         questions = []
-        for q_id, category_id, category_name, question_text, options, created_at, updated_at in rows:
+        for q_id, category_id, category_name, question_text, options in rows:
             if isinstance(options, str):
                 try:
                     options = json.loads(options)
@@ -35,8 +35,6 @@ async def get_questions():
                     "category_name": category_name,
                     "question_text": question_text,
                     "options": options,
-                    "created_at": created_at.isoformat() if hasattr(created_at, "isoformat") else created_at,
-                    "updated_at": updated_at.isoformat() if hasattr(updated_at, "isoformat") else updated_at,
                 }
             )
 

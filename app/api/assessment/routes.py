@@ -183,7 +183,7 @@ async def submit_assessment(body: SubmitAssessmentBody, user: dict = Depends(pro
             """
             INSERT INTO assessment_results (_id, user_id, summary, category_scores, answers)
             VALUES (gen_random_uuid(), %s, %s, %s, %s)
-            RETURNING _id, user_id, summary, category_scores, answers, created_at, updated_at
+            RETURNING _id, user_id, summary, category_scores, answers, created_at
             """,
             (
                 user["id"],
@@ -198,7 +198,7 @@ async def submit_assessment(body: SubmitAssessmentBody, user: dict = Depends(pro
         if not created:
             return JSONResponse(status_code=500, content={"error": "Assessment submission failed"})
 
-        result_id, user_id, db_summary, db_category_scores, db_answers, created_at, updated_at = created
+        result_id, user_id, db_summary, db_category_scores, db_answers, created_at = created
 
         # Normalize jsonb outputs if needed
         def _maybe_load(v):
@@ -216,7 +216,7 @@ async def submit_assessment(body: SubmitAssessmentBody, user: dict = Depends(pro
             "category_scores": _maybe_load(db_category_scores),
             "answers": _maybe_load(db_answers),
             "created_at": created_at.isoformat() if hasattr(created_at, "isoformat") else created_at,
-            "updated_at": updated_at.isoformat() if hasattr(updated_at, "isoformat") else updated_at,
+            "updated_at": created_at.isoformat() if hasattr(created_at, "isoformat") else created_at,
         }
 
         return JSONResponse(status_code=200, content={"success": True, "resultId": str(result_id), "data": data})
@@ -232,7 +232,7 @@ async def history(user: dict = Depends(protect)):
         cursor = getCursor()
         cursor.execute(
             """
-            SELECT _id, user_id, summary, category_scores, answers, created_at, updated_at
+            SELECT _id, user_id, summary, category_scores, answers, created_at
             FROM assessment_results
             WHERE user_id = %s
             ORDER BY created_at DESC
@@ -251,7 +251,7 @@ async def history(user: dict = Depends(protect)):
             return v
 
         history = []
-        for rid, uid, summ, cats, ans, ca, ua in rows:
+        for rid, uid, summ, cats, ans, ca in rows:
             history.append(
                 {
                     "_id": str(rid),
@@ -260,7 +260,7 @@ async def history(user: dict = Depends(protect)):
                     "category_scores": _maybe_load(cats),
                     "answers": _maybe_load(ans),
                     "created_at": ca.isoformat() if hasattr(ca, "isoformat") else ca,
-                    "updated_at": ua.isoformat() if hasattr(ua, "isoformat") else ua,
+                    "updated_at": ca.isoformat() if hasattr(ca, "isoformat") else ca,
                 }
             )
 
@@ -277,7 +277,7 @@ async def download_pdf(id: str, user: dict = Depends(protect)):
         cursor = getCursor()
         cursor.execute(
             """
-            SELECT _id, user_id, summary, category_scores, answers, created_at, updated_at
+            SELECT _id, user_id, summary, category_scores, answers, created_at
             FROM assessment_results
             WHERE _id::text = %s
             """,
@@ -289,7 +289,7 @@ async def download_pdf(id: str, user: dict = Depends(protect)):
         if not row:
             raise HTTPException(status_code=404, detail="Assessment not found")
 
-        rid, uid, summ, cats, ans, created_at, updated_at = row
+        rid, uid, summ, cats, ans, created_at = row
         if uid != user["id"]:
             raise HTTPException(status_code=403, detail="Forbidden")
 
@@ -308,7 +308,7 @@ async def download_pdf(id: str, user: dict = Depends(protect)):
             "category_scores": _maybe_load(cats),
             "answers": _maybe_load(ans),
             "created_at": created_at.isoformat() if hasattr(created_at, "isoformat") else created_at,
-            "updated_at": updated_at.isoformat() if hasattr(updated_at, "isoformat") else updated_at,
+            "updated_at": created_at.isoformat() if hasattr(created_at, "isoformat") else created_at,
         }
 
         pdf_bytes = generate_assessment_pdf_bytes(assessment)

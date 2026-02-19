@@ -5,7 +5,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.auth.routes import router as auth_router
 from api.scanner.routes import router as scanner_router
-from db.sessions import init_db, init_tables
+from app.db.create_db import init_db
+from app.db.init_db import init_tables
 from api.scanner.routes import router as scanner_router
 from api.webhooks.routes import router as webhook_scanner_router
 from api.seed.routes import router as seed_router, seed_questions_data
@@ -15,15 +16,19 @@ from api.questions.routes import router as questions_router
 app = FastAPI()
 
 # Initialize database on startup
-init_db()
-init_tables()
+@app.on_event("startup")
+async def startup_event():
+    print("Initializing database...")
+    init_db()
+    init_tables()
 
-# Seed questions on startup
-try:
-    tup = seed_questions_data()
-    print(tup[1])
-except Exception as e:
-    print(f"Error seeding questions: {e}")
+    # Seed questions safely
+    try:
+        tup = seed_questions_data()
+        print(tup[1])
+    except Exception as e:
+        print(f"Error seeding questions: {e}")
+
 
 # CORS
 app.add_middleware(
